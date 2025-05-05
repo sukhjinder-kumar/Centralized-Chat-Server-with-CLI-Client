@@ -7,8 +7,6 @@ A simple, centralized chat application built with Python’s standard library. I
 - Send **private messages** to individual users  
 - Gracefully **join**, **switch**, and **quit**  
 
----
-
 ## 🚀 Features
 
 - **Multi-threaded server** handles each client connection in its own thread  
@@ -19,14 +17,12 @@ A simple, centralized chat application built with Python’s standard library. I
 - **Timestamps & usernames** prefixed on every chat message  
 - **Thread-safe** client and channel management  
 
----
 
 ## 🛠️ Requirements
 
 - Python 3.6 or higher  
 - No external dependencies—uses only the standard library  
 
----
 
 ## 📥 Installation
 
