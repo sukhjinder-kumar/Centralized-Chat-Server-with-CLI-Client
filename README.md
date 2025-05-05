@@ -41,15 +41,15 @@ A simple, centralized chat application built with Python’s standard library. I
 
 ### 1. Start the Server
 
-    ```bash
-    python3 server.py
-    ```
+```bash
+python3 server.py
+```
 
 By default, the server listens on 127.0.0.1:12345. You’ll see log messages like:
 
-    ```bash
-    [Server] Running on 127.0.0.1:12345
-    ```
+```bash
+[Server] Running on 127.0.0.1:12345
+```
 
 ### 2. Run a Client
 
