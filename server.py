@@ -1,37 +1,51 @@
 import socket
 import threading
 
-# List to store all active client connections
 clients = []
+clients_lock = threading.Lock()
 
-# Broadcast message to all clients
-def broadcast(message, client_socket):
-    for client in clients:
-        if client != client_socket:
-            try:
-                client.send(message)
-            except:
-                # Handle client disconnection
-                clients.remove(client)
+# Broadcast message to all clients except the sender
+def broadcast(message, sender_socket):
+    with clients_lock:
+        for client in clients:
+            if client != sender_socket:
+                try:
+                    client.send(message)
+                except:
+                    # Handle client disconnection
+                    remove_client(client)
+
+# Add a client to the list of clients
+def add_client(client_socket):
+    with clients_lock:
+        clients.append(client_socket)
+
+# Remove a client from the list of clients
+def remove_client(client_socket):
+    with clients_lock:
+        if client_socket in clients:
+            clients.remove(client_socket)
 
 # Handle communication with a client
-def handle_client(client_socket):
-    # Add the client to the list of active clients
-    clients.append(client_socket)
-    
+def handle_client(client_socket, client_address):
     try:
+        add_client(client_socket)
+        welcome_message = f"Welcome! {client_address} has joined the chat.\n"
+        broadcast(welcome_message.encode('utf-8'), client_socket)
+
         while True:
-            # Receive message from the client
             message = client_socket.recv(1024)
             if not message:
                 break  # Client disconnected
-            # Broadcast the message to all other clients
             broadcast(message, client_socket)
-    except:
-        pass
+
+    except Exception as e:
+        print(f"Error with client {client_address}: {e}")
     finally:
-        # Remove the client from the list and close the connection
-        clients.remove(client_socket)
+        # Remove client and notify others
+        remove_client(client_socket)
+        leave_message = f"{client_address} has left the chat.\n"
+        broadcast(leave_message.encode('utf-8'), client_socket)
         client_socket.close()
 
 # Main server function
@@ -46,7 +60,7 @@ def start_server(host, port):
         print(f"New connection from {client_address}")
         
         # Create a new thread for each client
-        client_thread = threading.Thread(target=handle_client, args=(client_socket,))
+        client_thread = threading.Thread(target=handle_client, args=(client_socket, client_address))
         client_thread.start()
 
 if __name__ == "__main__":
